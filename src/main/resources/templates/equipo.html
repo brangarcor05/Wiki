@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Equipo</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Equipo de trabajo</h1>
+
+        <p>
+            Conoce a las personas que desarrollan el proyecto.
+        </p>
+
+    </header>
+
+
+  <ul>
+
+        <li>
+            <a th:href="@{/}">
+                Inicio
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/wiki}">
+                Wiki
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/equipo}">
+                Equipo
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/contacto}">
+                Contáctenos
+            </a>
+        </li>
+
+    </ul>
+
+    <main>
+
+        <h2>Integrantes del equipo</h2>
+
+        <div th:if="${equipo == null or equipo.isEmpty()}">
+
+            <p>
+                No hay integrantes registrados actualmente.
+            </p>
+
+        </div>
+
+        <section th:if="${equipo != null and !equipo.isEmpty()}">
+
+            <div th:each="miembro : ${equipo}">
+
+                <article>
+
+                    <h3 th:text="${miembro.nombre}">
+                        Nombre del integrante
+                    </h3>
+
+                    <p th:text="${miembro.rol}">
+                        Rol del integrante
+                    </p>
+
+                </article>
+
+                <hr>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        <p>
+            Wiki Desarrollo Web
+        </p>
+
+        <p>
+            Proyecto académico
+        </p>
+
+    </footer>
+
+</body>
+
+</html>
