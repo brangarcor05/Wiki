@@ -127,6 +127,17 @@ public class WikiDataService {
                                 "El acceso está protegido mediante autenticación y un control de acceso "
                                         + "por empresa y por rol: administrador, editor y usuario de "
                                         + "solo lectura."
+                        ),
+
+                        new Section(
+                                "Nombre oficial y alcance del proyecto",
+                                "El proyecto se conoce oficialmente como 'Editor de Procesos' (visor y editor "
+                                        + "de procesos empresariales). Está orientado únicamente a la "
+                                        + "visualización y edición de procesos, no a su ejecución: los usuarios "
+                                        + "pueden consultar, crear, modificar y organizar procesos, pero el "
+                                        + "sistema no dispara flujos automáticos ni tareas de procesamiento. "
+                                        + "Su enfoque es académico, orientado a evaluar arquitectura web, "
+                                        + "separación de responsabilidades, seguridad básica y buenas prácticas."
                         )
                 )
         ));
@@ -515,6 +526,43 @@ public class WikiDataService {
                                 "Cada mensaje incluye un identificador de correlación que permite "
                                         + "asociarlo con la instancia de proceso correcta y continuar "
                                         + "el flujo en el punto esperado."
+                        )
+                )
+        ));
+
+
+
+        paginas.add(new WikiPage(
+                "plan-de-entregas",
+                "resumen",
+                "Plan de Entregas",
+                "El proyecto se desarrolla de forma incremental, en tres entregas.",
+                List.of(
+
+                        new Section(
+                                "Entrega 1 · Aplicación web con Spring Boot, Thymeleaf y JPA (14/09/2026)",
+                                "Diseño e implementación de una aplicación web server-side estructurada, "
+                                        + "aplicando el patrón MVC y el modelo en capas: modelo de datos con JPA, "
+                                        + "lógica de negocio en servicios, vistas dinámicas con Thymeleaf para "
+                                        + "gestionar empresas, usuarios y procesos, repositorios con JPQL y "
+                                        + "named queries, controladores, validación y manejo de excepciones."
+                        ),
+
+                        new Section(
+                                "Entrega 2 · API REST y frontend con Angular (21/10/2026)",
+                                "Exposición de la lógica del sistema mediante servicios REST y desarrollo "
+                                        + "de una interfaz en Angular que los consume: componentes reutilizables, "
+                                        + "consumo de servicios con HttpClient y RxJS, formularios con paginación, "
+                                        + "despliegue empaquetado en contenedores Docker y documentación de la "
+                                        + "API con Swagger/OpenAPI."
+                        ),
+
+                        new Section(
+                                "Entrega final · Seguridad, pruebas y despliegue (25/11/2026)",
+                                "Autenticación y autorización con Spring Security garantizando el aislamiento "
+                                        + "de información entre empresas, funcionamiento completo e integrado del "
+                                        + "sistema, pruebas de integración y pruebas automatizadas de extremo a "
+                                        + "extremo (E2E), despliegue final y presentación del proyecto."
                         )
                 )
         ));
