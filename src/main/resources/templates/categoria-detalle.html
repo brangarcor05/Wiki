@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${categoria.name}">
+        Categoría
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('wiki')}"></div>
+
+    <main>
+
+        <section id="categoria">
+
+            <h2 th:text="${categoria.name}">
+                Nombre de la categoría
+            </h2>
+
+            <p th:text="${categoria.description}">
+                Descripción de la categoría.
+            </p>
+
+        </section>
+
+        <section id="paginas-categoria">
+
+            <h3>Páginas de esta categoría</h3>
+
+            <p th:if="${#lists.isEmpty(paginas)}">
+                Esta categoría aún no tiene páginas.
+            </p>
+
+            <div class="tarjeta" th:each="pagina : ${paginas}">
+
+                <article>
+
+                    <h4 th:text="${pagina.title}">
+                        Título de la página
+                    </h4>
+
+                    <p th:text="${pagina.summary}">
+                        Resumen de la página.
+                    </p>
+
+                    <a th:href="@{/wiki/{id}(id=${pagina.id})}">
+                        Ver página
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <p class="volver">
+            <a th:href="@{/}">
+                &larr; Volver al inicio
+            </a>
+        </p>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

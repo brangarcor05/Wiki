@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <nav th:fragment="menu(seccion)">
+
+        <ul>
+
+            <li>
+                <a th:href="@{/}"
+                   th:classappend="${seccion == 'inicio'} ? 'activo'">
+                    Inicio
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/wiki}"
+                   th:classappend="${seccion == 'wiki'} ? 'activo'">
+                    Wiki
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/equipo}"
+                   th:classappend="${seccion == 'equipo'} ? 'activo'">
+                    Equipo
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/contacto}"
+                   th:classappend="${seccion == 'contacto'} ? 'activo'">
+                    Contáctenos
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</body>
+
+</html>

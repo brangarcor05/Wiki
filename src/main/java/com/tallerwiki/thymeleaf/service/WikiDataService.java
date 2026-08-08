@@ -113,6 +113,20 @@ public class WikiDataService {
                                 "La plataforma busca mejorar la organización de los procesos, facilitar "
                                         + "la trazabilidad de los cambios y establecer diferentes niveles "
                                         + "de acceso según el rol de cada usuario."
+                        ),
+
+                        new Section(
+                                "Registro de empresas",
+                                "Cada organización puede registrarse en la plataforma y disponer de un "
+                                        + "espacio de trabajo independiente para administrar sus propios "
+                                        + "procesos, usuarios y roles."
+                        ),
+
+                        new Section(
+                                "Seguridad y control de acceso",
+                                "El acceso está protegido mediante autenticación y un control de acceso "
+                                        + "por empresa y por rol: administrador, editor y usuario de "
+                                        + "solo lectura."
                         )
                 )
         ));
@@ -161,6 +175,20 @@ public class WikiDataService {
                                 "Eliminación lógica",
                                 "Los procesos no necesariamente se eliminan físicamente. Se puede utilizar "
                                         + "un estado inactivo para conservar la información histórica."
+                        ),
+
+                        new Section(
+                                "Control de acceso por rol",
+                                "La creación, edición y publicación de procesos depende del rol del usuario: "
+                                        + "el editor puede modificar, el usuario de solo lectura únicamente "
+                                        + "consulta, y el administrador administra la empresa."
+                        ),
+
+                        new Section(
+                                "Pertenencia de los procesos",
+                                "Cada proceso pertenece a una empresa específica y no a un usuario en "
+                                        + "particular, lo que garantiza la consistencia y el control de la "
+                                        + "evolución de los procesos dentro de la organización."
                         )
                 )
         ));
@@ -208,6 +236,20 @@ public class WikiDataService {
                                 "Validación del modelo",
                                 "El sistema debe verificar que las relaciones entre actividades, arcos "
                                         + "y gateways sean coherentes antes de publicar un proceso."
+                        ),
+
+                        new Section(
+                                "Pools y lanes",
+                                "El modelo puede organizarse en pools, que representan cada proceso o "
+                                        + "participante, y dividirse en lanes según responsabilidades "
+                                        + "funcionales de la empresa."
+                        ),
+
+                        new Section(
+                                "Mensajes entre procesos",
+                                "El sistema contempla el envío y la recepción de mensajes entre procesos, "
+                                        + "notificaciones a sistemas externos y la correlación de los mensajes "
+                                        + "con las instancias de proceso."
                         )
                 )
         ));
@@ -261,6 +303,20 @@ public class WikiDataService {
                                 "Autenticación y acceso",
                                 "El acceso a la información debe estar condicionado por la identidad "
                                         + "del usuario y los permisos asociados a su rol y empresa."
+                        ),
+
+                        new Section(
+                                "Registro de usuarios en la empresa",
+                                "Cada empresa administra sus propios usuarios. El administrador puede "
+                                        + "registrar, consultar y activar o desactivar usuarios dentro "
+                                        + "de su organización."
+                        ),
+
+                        new Section(
+                                "Control de acceso por organización",
+                                "Los recursos se limitan al espacio de trabajo de la empresa a la que "
+                                        + "pertenece el usuario, evitando que la información de distintas "
+                                        + "organizaciones se mezcle."
                         )
                 )
         ));
@@ -376,6 +432,89 @@ public class WikiDataService {
                                 "Un Usuario pertenece a una Empresa; un Proceso pertenece a una Empresa; "
                                         + "una Actividad está asociada a un RolFuncional; y un Arco conecta "
                                         + "dos nodos, que pueden ser Actividades o Gateways."
+                        ),
+
+                        new Section(
+                                "Elementos complementarios",
+                                "El modelo se amplía con el pool y sus lanes, los mensajes para la "
+                                        + "comunicación entre procesos y hacia sistemas externos, y los "
+                                        + "identificadores de correlación que vinculan cada mensaje "
+                                        + "con la instancia de proceso correcta."
+                        )
+                )
+        ));
+
+
+
+        paginas.add(new WikiPage(
+                "pools-y-lanes",
+                "funcionalidades",
+                "Pool y Lanes (Swimlanes)",
+                "Organización de los procesos en pools y en lanes según responsabilidades.",
+                List.of(
+
+                        new Section(
+                                "Configuración del pool",
+                                "Cada empresa puede configurar los pools de sus procesos. El pool "
+                                        + "delimita el contenido de cada proceso y define su alcance "
+                                        + "dentro del espacio de trabajo."
+                        ),
+
+                        new Section(
+                                "Diferencia entre pool y lane",
+                                "El pool representa el proceso o participante completo, mientras que "
+                                        + "el lane (swimlane) divide el pool en franjas que agrupan "
+                                        + "las actividades por responsabilidad funcional."
+                        ),
+
+                        new Section(
+                                "Compartir procesos entre pools",
+                                "Un pool puede compartirse entre procesos respetando el alcance y los "
+                                        + "límites: se define claramente qué actividades y mensajes "
+                                        + "pertenecen a cada proceso."
+                        ),
+
+                        new Section(
+                                "Roles y permisos en el pool",
+                                "A cada pool se asocian los roles y permisos de la empresa, de modo "
+                                        + "que solo los usuarios con el rol adecuado puedan participar "
+                                        + "o modificar su contenido."
+                        )
+                )
+        ));
+
+
+        paginas.add(new WikiPage(
+                "comunicacion-entre-procesos",
+                "funcionalidades",
+                "Comunicación y Mensajería entre Procesos",
+                "Envío y recepción de mensajes entre procesos, notificaciones y correlación.",
+                List.of(
+
+                        new Section(
+                                "Enviar mensaje (Message Throw)",
+                                "Un proceso puede lanzar un mensaje hacia otro proceso o hacia un "
+                                        + "sistema externo para indicar un evento o solicitar información."
+                        ),
+
+                        new Section(
+                                "Notificaciones a sistemas externos",
+                                "El envío de mensajes permite notificar a sistemas externos sobre "
+                                        + "cambios o estados relevantes, por ejemplo al terminar "
+                                        + "un proceso."
+                        ),
+
+                        new Section(
+                                "Recibir mensaje (Message Catch)",
+                                "Un proceso puede quedar a la espera de un mensaje y activarse cuando "
+                                        + "lo recibe, permitiendo que los procesos se sincronicen entre sí."
+                        ),
+
+                        new Section(
+                                "Correlación de mensajes",
+                                "Cada mensaje incluye un identificador de correlación que permite "
+                                        + "asociarlo con la instancia de proceso correcta y continuar "
+                                        + "el flujo en el punto esperado."
                         )
                 )
         ));

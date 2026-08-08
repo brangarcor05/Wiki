@@ -2,68 +2,94 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title th:text="${titulo}">
-        Wiki Desarrollo Web
+        Sistema de Gestión de Procesos Multiempresa
     </title>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
 </head>
 
 <body>
 
-    <header>
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('inicio')}"></div>
 
-        <div>
+    <main>
 
-            <h1 th:text="${titulo}">
-                Sistema de Gestión de Procesos Multiempresa
-            </h1>
+        <section id="resumen">
 
-            <p>
-                Wiki de documentación del proyecto
+            <h2>Sobre el proyecto</h2>
+
+            <p th:text="${descripcion}">
+                Wiki de presentación del proyecto.
             </p>
 
-        </div>
+            <p>
+                Esta Wiki organiza la documentación del sistema: qué es, qué
+                funcionalidades ofrece, cómo está pensada su arquitectura y
+                quién la desarrolla.
+            </p>
 
-    </header>
+        </section>
 
-    <nav>
+        <section id="estadisticas">
 
-        <ul>
+            <h2>La Wiki en números</h2>
 
-            <li>
-                <a th:href="@{/}">
-                    Inicio
-                </a>
-            </li>
+            <p>
+                Actualmente el espacio de documentación cuenta con
+                <strong th:text="${totalPaginas}">6</strong>
+                páginas organizadas en
+                <strong th:text="${categorias.size()}">3</strong>
+                categorías.
+            </p>
 
-            <li>
-                <a th:href="@{/wiki}">
-                    Wiki
-                </a>
-            </li>
+        </section>
 
-            <li>
-                <a th:href="@{/equipo}">
-                    Equipo
-                </a>
-            </li>
+        <section id="categorias" th:if="${categorias != null and !categorias.isEmpty()}">
 
-            <li>
-                <a th:href="@{/contacto}">
-                    Contáctenos
-                </a>
-            </li>
+            <h2>Categorías de documentación</h2>
 
-        </ul>
+            <div class="categorias-lista" th:each="categoria : ${categorias}">
 
-    </nav>
+                <article>
+
+                    <h3 th:text="${categoria.name}">
+                        Nombre de la categoría
+                    </h3>
+
+                    <p th:text="${categoria.description}">
+                        Descripción de la categoría.
+                    </p>
+
+                    <a th:href="@{/categoria/{id}(id=${categoria.id})}">
+                        Ver páginas de esta categoría
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <section id="navegacion-contenido">
+
+            <h2>Explorar la Wiki</h2>
+
+            <ul>
+                <li><a th:href="@{/wiki}">Ver todas las páginas</a></li>
+                <li><a th:href="@{/equipo}">Conocer al equipo</a></li>
+                <li><a th:href="@{/contacto}">Contactar al proyecto</a></li>
+            </ul>
+
+        </section>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
 </body>
 

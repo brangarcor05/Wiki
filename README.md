@@ -872,14 +872,17 @@ WikiDataService.java
 
 ### Resumen del Proyecto
 
-Explica la idea general del sistema.
+Explica la idea general del sistema: registro de empresas con espacio independiente, usuarios con roles
+(administrador, editor y solo lectura) y control de acceso por empresa.
 
 ### Funcionalidades
 
 Explica las funcionalidades principales:
 
-- gestión de procesos
-- modelado de procesos
+- gestión de procesos (CRUD, historial, filtros y eliminación lógica)
+- modelado de procesos (actividades, arcos y gateways)
+- pools y lanes (swimlanes)
+- comunicación y mensajería entre procesos
 - multiempresa
 - seguridad
 
@@ -907,6 +910,8 @@ Modelado de Procesos
 Multiempresa y Seguridad
 Arquitectura Propuesta
 Modelo de Datos
+Pool y Lanes (Swimlanes)
+Comunicación y Mensajería entre Procesos
 ```
 
 Cada página pertenece a una categoría.

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Wiki — Páginas
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('wiki')}"></div>
+
+    <main>
+
+        <h2>Páginas de la Wiki</h2>
+
+        <p th:if="${#lists.isEmpty(paginas)}">
+            No hay páginas disponibles por el momento.
+        </p>
+
+        <section id="lista-paginas" th:unless="${#lists.isEmpty(paginas)}">
+
+            <div class="tarjeta" th:each="pagina : ${paginas}">
+
+                <article>
+
+                    <h3 th:text="${pagina.title}">
+                        Título de la página
+                    </h3>
+
+                    <p th:text="${pagina.summary}">
+                        Resumen de la página.
+                    </p>
+
+                    <a th:href="@{/wiki/{id}(id=${pagina.id})}">
+                        Leer más
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

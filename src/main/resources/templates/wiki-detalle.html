@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${pagina.title}">
+        Detalle de la página
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('wiki')}"></div>
+
+    <main>
+
+        <article id="detalle-pagina">
+
+            <h2 th:text="${pagina.title}">
+                Título de la página
+            </h2>
+
+            <p class="resumen" th:text="${pagina.summary}">
+                Resumen de la página.
+            </p>
+
+            <p th:if="${#lists.isEmpty(pagina.sections)}">
+                Esta página aún no tiene secciones.
+            </p>
+
+            <section class="secciones" th:unless="${#lists.isEmpty(pagina.sections)}">
+
+                <div th:each="seccion : ${pagina.sections}">
+
+                    <h3 th:text="${seccion.title}">
+                        Título de la sección
+                    </h3>
+
+                    <p th:text="${seccion.content}">
+                        Contenido de la sección.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </article>
+
+        <p class="volver">
+            <a th:href="@{/wiki}">
+                &larr; Volver al listado
+            </a>
+        </p>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>
