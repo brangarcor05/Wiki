@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacto - Wiki Sistema de Gestion de Procesos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('contacto')}"></div>
+
+    <main class="contenido contacto-container">
+        <h1>Contactenos</h1>
+        <p>Completa el formulario y nos pondremos en contacto contigo lo antes posible.</p>
+
+        <form id="formContacto" novalidate>
+
+            <div class="form-group">
+                <label for="nombre">Nombre completo *</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre completo">
+                <span class="error-message" id="errorNombre"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Correo electronico *</label>
+                <input type="text" id="correo" name="correo" placeholder="ejemplo@correo.com">
+                <span class="error-message" id="errorCorreo"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Telefono *</label>
+                <input type="text" id="telefono" name="telefono" placeholder="Solo numeros">
+                <span class="error-message" id="errorTelefono"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="asunto">Asunto o motivo de contacto *</label>
+                <select id="asunto" name="asunto">
+                    <option value="">Seleccione una opcion</option>
+                    <option value="soporte">Soporte tecnico</option>
+                    <option value="informacion">Informacion general</option>
+                    <option value="sugerencia">Sugerencia</option>
+                    <option value="otro">Otro</option>
+                </select>
+                <span class="error-message" id="errorAsunto"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="mensaje">Mensaje *</label>
+                <textarea id="mensaje" name="mensaje" rows="6" maxlength="400" placeholder="Escribe tu mensaje (minimo 20 caracteres)"></textarea>
+                <span class="contador-caracteres" id="contadorMensaje">Faltan 20 caracteres</span>
+                <span class="error-message" id="errorMensaje"></span>
+            </div>
+
+            <button type="submit" id="btnEnviar">Enviar mensaje</button>
+
+            <div id="mensajeExito" class="success-message" style="display:none;">
+                Tu mensaje es valido y esta listo para ser enviado.
+            </div>
+
+        </form>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:src="@{/js/contacto.js}"></script>
+</body>
+</html>
+
