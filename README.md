@@ -1109,6 +1109,7 @@ Para enlaces dinámicos:
 ---
 
 # 18. Despliegue docker
+```
 docker build -t "nombre_del_proyecto" .
 
-
+```
