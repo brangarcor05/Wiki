@@ -27,26 +27,39 @@
 
         <section id="lista-equipo" th:unless="${#lists.isEmpty(equipo)}">
 
-            <div class="tarjeta" th:each="miembro : ${equipo}">
+            <table>
 
-                <article>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
 
-                    <h3 th:text="${miembro.nombre}">
-                        Nombre del integrante
-                    </h3>
+                <tbody>
 
-                    <p th:text="${miembro.rol}">
-                        Rol del integrante
-                    </p>
+                    <tr th:each="miembro : ${equipo}">
 
-                    <p th:if="${miembro.correo != null and !#strings.isEmpty(miembro.correo)}"
-                       th:text="${miembro.correo}">
-                        Correo del integrante
-                    </p>
+                        <td class="miembro-nombre">
 
-                </article>
+                            <img th:src="@{'/images/' + ${miembro.imagen}}" 
+                            th:alt="${miembro.nombre}">
 
-            </div>
+                            <strong th:text="${miembro.nombre}">
+                                Nombre del integrante
+                            </strong>
+
+                        </td>
+
+                        <td th:text="${miembro.rol}">
+                            Rol del integrante
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
 
         </section>
 

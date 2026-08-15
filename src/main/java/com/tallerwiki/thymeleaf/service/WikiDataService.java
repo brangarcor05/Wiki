@@ -572,32 +572,37 @@ public class WikiDataService {
     private void cargarEquipo() {
 
         equipo.add(new Miembro(
-                "Elieen",
+                "Elieen Rodriguez",
                 "Líder de proyecto",
-                ""
+                "",
+                "Eileen.jpg"
         ));
 
         equipo.add(new Miembro(
-                "Brandon",
+                "Brandon Garcia",
                 "Desarrollador",
+                "",
                 ""
         ));
 
         equipo.add(new Miembro(
-                "Carol",
+                "Carol Robayo",
                 "Desarrolladora",
+                "",
                 ""
         ));
 
         equipo.add(new Miembro(
-                "Juliana",
+                "Juliana Aguirre",
                 "Desarrolladora",
+                "",
                 ""
         ));
 
         equipo.add(new Miembro(
-                "Juan",
+                "Juan Santamaria",
                 "Desarrollador",
+                "",
                 ""
         ));
     }
