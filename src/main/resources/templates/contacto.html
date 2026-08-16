@@ -14,7 +14,11 @@
         <h1>Contactenos</h1>
         <p>Completa el formulario y nos pondremos en contacto contigo lo antes posible.</p>
 
-        <form id="formContacto" novalidate>
+        <div id="mensajeExito" class="success-message" th:if="${enviado}">
+            Tu mensaje fue guardado correctamente. Pronto nos pondremos en contacto contigo.
+        </div>
+
+        <form id="formContacto" th:action="@{/contacto}" th:object="${mensajeContacto}" method="post" novalidate>
 
             <div class="form-group">
                 <label for="nombre">Nombre completo *</label>
@@ -54,10 +58,6 @@
             </div>
 
             <button type="submit" id="btnEnviar">Enviar mensaje</button>
-
-            <div id="mensajeExito" class="success-message" style="display:none;">
-                Tu mensaje es valido y esta listo para ser enviado.
-            </div>
 
         </form>
     </main>

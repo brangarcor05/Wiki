@@ -11,7 +11,6 @@ const errorTelefono = document.getElementById("errorTelefono");
 const errorAsunto = document.getElementById("errorAsunto");
 const errorMensaje = document.getElementById("errorMensaje");
 const contadorMensaje = document.getElementById("contadorMensaje");
-const mensajeExito = document.getElementById("mensajeExito");
 
 const MENSAJE_MIN = 20;
 const MENSAJE_MAX = 400;
@@ -117,10 +116,6 @@ form.addEventListener("submit", function (e) {
     const mensajeOk = validarMensaje();
 
     if (nombreOk && correoOk && telefonoOk && asuntoOk && mensajeOk) {
-        mensajeExito.style.display = "block";
-        form.reset();
-        contadorMensaje.textContent = "Faltan " + MENSAJE_MIN + " caracteres";
-    } else {
-        mensajeExito.style.display = "none";
+        form.submit();
     }
 });
