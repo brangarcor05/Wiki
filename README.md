@@ -14,7 +14,7 @@ La aplicación sigue una arquitectura MVC básica:
 - **Vistas Thymeleaf:** renderizan dinámicamente la información en HTML.
 - **Recursos estáticos:** contienen CSS y JavaScript.
 
-Actualmente los datos de la Wiki se encuentran **simulados en memoria**, por lo que no se utiliza todavía una base de datos.
+Los datos de la Wiki se almacenan en una **base de datos H2 en memoria** mediante JPA/Hibernate. Al iniciar la aplicación, las tablas se crean automáticamente y se cargan los datos iniciales desde `data.sql`. La configuración es puramente de desarrollo: no se requiere instalar ningún servidor de base de datos.
 
 ---
 
@@ -24,6 +24,8 @@ Actualmente los datos de la Wiki se encuentran **simulados en memoria**, por lo 
 - Spring Boot
 - Spring MVC
 - Thymeleaf
+- Spring Data JPA / Hibernate
+- H2 (base de datos en memoria)
 - Maven
 - HTML5
 - CSS3
@@ -48,6 +50,7 @@ thymeleaf/
 │   │   │           └── thymeleaf/
 │   │   │               ├── controller/
 │   │   │               ├── model/
+│   │   │               ├── repository/
 │   │   │               ├── service/
 │   │   │               ├── ServletInitializer.java
 │   │   │               └── ThymeleafApplication.java
@@ -72,6 +75,7 @@ thymeleaf/
 │   │       │   ├── equipo.html
 │   │       │   └── contacto.html
 │   │       │
+│   │       ├── data.sql
 │   │       └── application.properties
 │   │
 │   └── test/
@@ -123,7 +127,7 @@ Navegador
 1. El usuario entra a una URL.
 2. Spring identifica el controlador correspondiente.
 3. El controlador solicita información al `WikiDataService`.
-4. El servicio obtiene los datos desde las listas en memoria.
+4. El servicio consulta los repositorios JPA, que leen de la base de datos H2.
 5. El controlador agrega los datos al objeto `Model`.
 6. Thymeleaf recibe el `Model`.
 7. La plantilla HTML utiliza expresiones `th:*` para mostrar los datos.
@@ -139,7 +143,7 @@ Ubicación:
 src/main/java/com/tallerwiki/thymeleaf/model/
 ```
 
-Este paquete contiene las clases que representan los datos que utiliza la Wiki. Actualmente se manejan cuatro modelos: `Category`, `Miembro`, `Section` y `WikiPage`.
+Este paquete contiene las clases que representan los datos que utiliza la Wiki. Actualmente se manejan cinco modelos: `Category`, `Miembro`, `Section`, `WikiPage` y `MensajeContacto`. Todos son entidades JPA (`@Entity`) que se persisten en la base de datos H2.
 
 ---
 
@@ -159,7 +163,7 @@ description
 
 Permite agrupar las páginas de la Wiki por una categoría y proporcionar una descripción general de cada grupo de contenido.
 
-Actualmente las categorías se cargan desde `WikiDataService`.
+Actualmente las categorías se cargan desde la base de datos vía `CategoryRepository`.
 
 ---
 
@@ -170,9 +174,11 @@ Representa a un integrante del equipo de desarrollo.
 Atributos:
 
 ```text
+id
 nombre
 rol
 correo
+imagen
 ```
 
 ### Responsabilidad
@@ -181,7 +187,9 @@ Permite almacenar y presentar la información básica de los integrantes del equ
 
 El atributo `correo` está disponible para que posteriormente pueda mostrarse en la vista `equipo.html`.
 
-Actualmente los integrantes se cargan desde `WikiDataService`.
+El atributo `imagen` guarda el nombre del archivo de imagen que se muestra en `equipo.html`.
+
+Actualmente los integrantes se cargan desde la base de datos vía `MiembroRepository`.
 
 ---
 
@@ -242,6 +250,30 @@ private List<Section> sections = new ArrayList<>();
 ```
 
 Esto permite que una página tenga múltiples secciones.
+
+---
+
+## `MensajeContacto.java`
+
+Representa un mensaje enviado a través del formulario de contacto.
+
+Atributos:
+
+```text
+id
+nombre
+correo
+telefono
+asunto
+mensaje
+fecha
+```
+
+### Responsabilidad
+
+Permite almacenar en la base de datos los datos que ingresa un usuario en el formulario de `/contacto`.
+
+Cuando el formulario supera la validación en JavaScript, se envía por `POST` a `/contacto`; el controlador guarda el mensaje mediante `ContactoService` y la fecha se asigna automáticamente en `@PrePersist`.
 
 ---
 
@@ -387,15 +419,15 @@ src/main/java/com/tallerwiki/thymeleaf/service/
 
 Es el servicio principal encargado de administrar los datos de la Wiki.
 
-Actualmente trabaja con:
+Utiliza los repositorios JPA para consultar la información:
 
 ```java
-List<Category> categorias
-List<WikiPage> paginas
-List<Miembro> equipo
+CategoryRepository      → categorías
+WikiPageRepository      → páginas
+MiembroRepository       → equipo
 ```
 
-Los datos se cargan cuando se crea el servicio.
+Los repositorios leen la información desde la base de datos H2.
 
 ### Responsabilidades
 
@@ -414,7 +446,15 @@ Los controladores **no deben contener directamente los datos de la Wiki**.
 
 La idea es mantener la responsabilidad de acceso a los datos dentro de `WikiDataService`.
 
-Esto permitirá posteriormente reemplazar las listas en memoria por una base de datos sin tener que modificar toda la lógica de las vistas.
+Como los datos vienen de los repositorios JPA, cualquier cambio en la base de datos se refleja sin modificar la lógica de las vistas.
+
+---
+
+## `ContactoService.java`
+
+Encargado de guardar los mensajes del formulario de contacto.
+
+Proporciona el método `guardar(MensajeContacto)` que persiste el mensaje en la tabla `mensajes_contacto` mediante `MensajeContactoRepository`.
 
 ---
 
@@ -571,10 +611,11 @@ La vista puede recorrer la lista mediante `th:each`.
 
 Controla la página de contacto.
 
-Ruta:
+Rutas:
 
 ```text
-/contacto
+GET  /contacto
+POST /contacto
 ```
 
 Vista:
@@ -583,9 +624,9 @@ Vista:
 contacto.html
 ```
 
-Actualmente el controlador únicamente presenta la vista.
+El `GET /contacto` presenta la vista. El `POST /contacto` recibe los datos del formulario, los guarda en la base de datos mediante `ContactoService` y redirige de regreso a `/contacto` mostrando el aviso "Tu mensaje fue guardado correctamente".
 
-La validación del formulario se realiza en JavaScript.
+La validación del formulario se realiza en JavaScript; al pasar la validación, el formulario se envía al servidor para su guardado.
 
 ---
 
@@ -703,7 +744,7 @@ Ejemplo:
 
 Contiene el formulario de Contáctenos.
 
-Debe tener como mínimo:
+Tiene los campos:
 
 1. Nombre completo
 2. Correo electrónico
@@ -712,6 +753,8 @@ Debe tener como mínimo:
 5. Mensaje
 
 Las validaciones se implementan mediante JavaScript.
+
+Cuando la validación es correcta, el formulario se envía por `POST` a `/contacto` y el mensaje queda guardado en la base de datos H2 (tabla `mensajes_contacto`). El aviso de éxito se muestra desde el servidor (attr flash `enviado`).
 
 ---
 
@@ -823,6 +866,8 @@ static/js/contacto.js
 
 Se utiliza principalmente para las validaciones del formulario de contacto.
 
+Al pasar todas las validaciones, el formulario se envía al servidor (`form.submit()`) para que `ContactController` lo guarde en la base de datos.
+
 Las validaciones requeridas son:
 
 ### Nombre completo
@@ -862,11 +907,13 @@ El formulario no debe continuar si existe algún error de validación.
 
 # 11. Datos actuales de la Wiki
 
-Los datos se encuentran dentro de:
+Los datos iniciales de la Wiki (categorías, páginas, secciones y equipo) se cargan desde:
 
 ```text
-WikiDataService.java
+src/main/resources/data.sql
 ```
+
+Este archivo se ejecuta al iniciar la aplicación sobre la base de datos H2, después de que Hibernate crea las tablas (`spring.jpa.defer-datasource-initialization=true`).
 
 ## Categorías
 
@@ -1108,8 +1155,65 @@ Para enlaces dinámicos:
 
 ---
 
-# 18. Despliegue docker
-```
-docker build -t "nombre_del_proyecto" .
+# 18. Persistencia y consola H2
 
+La aplicación usa **H2 en memoria** con Spring Data JPA.
+
+## Configuración
+
+En `application.properties`:
+
+```text
+spring.datasource.url=jdbc:h2:mem:wikidb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.defer-datasource-initialization=true
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+spring.h2.console.settings.web-allow-others=true
 ```
+
+- `ddl-auto=create`: Hibernate crea las tablas a partir de las entidades.
+- `data.sql`: carga los datos iniciales al arrancar.
+- `web-allow-others=true`: necesario para acceder a la consola cuando la app corre en Docker.
+
+## Consola web de H2
+
+Con la aplicación corriendo, abrir `http://localhost:8081/h2-console` y conectar con:
+
+```text
+JDBC URL: jdbc:h2:mem:wikidb
+User:     sa
+Password: (vacío)
+```
+
+## Tablas
+
+| Tabla | Contenido |
+|---|---|
+| `categories` | Categorías de la Wiki |
+| `wiki_pages` | Páginas de la Wiki |
+| `sections` | Secciones de cada página |
+| `miembros` | Integrantes del equipo |
+| `mensajes_contacto` | Mensajes enviados desde el formulario de contacto |
+
+## Nota sobre H2
+
+Como la base es en memoria, los datos se pierden al detener la aplicación y se recargan desde `data.sql` en cada arranque. Los mensajes de contacto guardados durante una sesión solo están disponibles mientras la aplicación esté corriendo.
+
+---
+
+# 19. Despliegue docker
+
+Construir la imagen:
+
+```text
+docker build -t "nombre_del_proyecto" .
+```
+
+Ejecutar el contenedor:
+
+```text
+docker run -d -p 8081:8081 --name wiki-app wiki-taller
+```
+
+La aplicación queda disponible en `http://localhost:8081/`.
