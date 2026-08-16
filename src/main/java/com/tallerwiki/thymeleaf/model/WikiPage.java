@@ -1,14 +1,36 @@
 package com.tallerwiki.thymeleaf.model;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "wiki_pages")
 public class WikiPage {
 
+    @Id
+    @Column(name = "id", length = 50)
     private String id;
+
+    @Column(name = "category_id", length = 50, nullable = false)
     private String categoryId;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "summary", length = 500)
     private String summary;
+
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OrderBy("posicion ASC")
     private List<Section> sections = new ArrayList<>();
 
     public WikiPage() {
