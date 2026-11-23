@@ -22,39 +22,48 @@
 
             <div class="form-group">
                 <label for="nombre">Nombre completo *</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre completo">
-                <span class="error-message" id="errorNombre"></span>
+                <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre completo"
+                       th:value="*{nombre}" th:classappend="${#fields.hasErrors('nombre')} ? 'input-error'">
+                <span class="error-message" id="errorNombre"
+                      th:text="${#fields.hasErrors('nombre')} ? ${#fields.errors('nombre')[0]} : ''"></span>
             </div>
 
             <div class="form-group">
                 <label for="correo">Correo electronico *</label>
-                <input type="text" id="correo" name="correo" placeholder="ejemplo@correo.com">
-                <span class="error-message" id="errorCorreo"></span>
+                <input type="text" id="correo" name="correo" placeholder="ejemplo@correo.com"
+                       th:value="*{correo}" th:classappend="${#fields.hasErrors('correo')} ? 'input-error'">
+                <span class="error-message" id="errorCorreo"
+                      th:text="${#fields.hasErrors('correo')} ? ${#fields.errors('correo')[0]} : ''"></span>
             </div>
 
             <div class="form-group">
                 <label for="telefono">Telefono *</label>
-                <input type="text" id="telefono" name="telefono" placeholder="Solo numeros">
-                <span class="error-message" id="errorTelefono"></span>
+                <input type="text" id="telefono" name="telefono" placeholder="Solo numeros"
+                       th:value="*{telefono}" th:classappend="${#fields.hasErrors('telefono')} ? 'input-error'">
+                <span class="error-message" id="errorTelefono"
+                      th:text="${#fields.hasErrors('telefono')} ? ${#fields.errors('telefono')[0]} : ''"></span>
             </div>
 
             <div class="form-group">
                 <label for="asunto">Asunto o motivo de contacto *</label>
-                <select id="asunto" name="asunto">
+                <select id="asunto" name="asunto" th:classappend="${#fields.hasErrors('asunto')} ? 'input-error'">
                     <option value="">Seleccione una opcion</option>
-                    <option value="soporte">Soporte tecnico</option>
-                    <option value="informacion">Informacion general</option>
-                    <option value="sugerencia">Sugerencia</option>
-                    <option value="otro">Otro</option>
+                    <option value="soporte" th:selected="*{asunto == 'soporte'}">Soporte tecnico</option>
+                    <option value="informacion" th:selected="*{asunto == 'informacion'}">Informacion general</option>
+                    <option value="sugerencia" th:selected="*{asunto == 'sugerencia'}">Sugerencia</option>
+                    <option value="otro" th:selected="*{asunto == 'otro'}">Otro</option>
                 </select>
-                <span class="error-message" id="errorAsunto"></span>
+                <span class="error-message" id="errorAsunto"
+                      th:text="${#fields.hasErrors('asunto')} ? ${#fields.errors('asunto')[0]} : ''"></span>
             </div>
 
             <div class="form-group">
                 <label for="mensaje">Mensaje *</label>
-                <textarea id="mensaje" name="mensaje" rows="6" maxlength="400" placeholder="Escribe tu mensaje (minimo 20 caracteres)"></textarea>
+                <textarea id="mensaje" name="mensaje" rows="6" maxlength="400" placeholder="Escribe tu mensaje (minimo 20 caracteres)"
+                          th:text="*{mensaje}" th:classappend="${#fields.hasErrors('mensaje')} ? 'input-error'"></textarea>
                 <span class="contador-caracteres" id="contadorMensaje">Faltan 20 caracteres</span>
-                <span class="error-message" id="errorMensaje"></span>
+                <span class="error-message" id="errorMensaje"
+                      th:text="${#fields.hasErrors('mensaje')} ? ${#fields.errors('mensaje')[0]} : ''"></span>
             </div>
 
             <button type="submit" id="btnEnviar">Enviar mensaje</button>
