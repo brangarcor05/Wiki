@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Documentos - Wiki Sistema de Gestión de Procesos
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('documentos')}"></div>
+
+    <main id="documentos">
+
+        <h2>Documentos de la entrega final</h2>
+
+        <p>
+            Documentación del proyecto solicitada para la entrega final. Cada documento
+            se puede leer directamente en la Wiki o descargar en formato Word (.docx).
+        </p>
+
+        <p class="documentos-resumen" th:unless="${#lists.isEmpty(documentos)}">
+            Disponibles:
+            <strong th:text="${disponibles}">0</strong>
+            de
+            <strong th:text="${#lists.size(documentos)}">8</strong>
+            documentos.
+        </p>
+
+        <p th:if="${#lists.isEmpty(documentos)}">
+            No hay documentos registrados actualmente.
+        </p>
+
+        <section id="lista-documentos" th:unless="${#lists.isEmpty(documentos)}">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>N.º</th>
+                        <th>Documento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:each="doc : ${documentos}">
+
+                        <td class="documento-numero"
+                            th:text="${#numbers.formatInteger(doc.numero, 2)}">
+                            01
+                        </td>
+
+                        <td class="documento-info">
+                            <a th:if="${doc.disponible}"
+                               th:href="@{/documentos/{numero}(numero=${doc.numero})}">
+                                <strong th:text="${doc.titulo}">Título del documento</strong>
+                            </a>
+                            <strong th:unless="${doc.disponible}" th:text="${doc.titulo}">Título del documento</strong>
+                            <span th:if="${doc.descripcion}" th:text="${doc.descripcion}">
+                                Descripción del documento.
+                            </span>
+                        </td>
+
+                        <td class="documento-acciones">
+                            <a th:if="${doc.disponible}"
+                               class="boton-ver"
+                               th:href="@{/documentos/{numero}(numero=${doc.numero})}">
+                                Ver
+                            </a>
+
+                            <a th:if="${doc.disponible}"
+                               class="boton-descargar"
+                               th:href="@{/documentos/{archivo}(archivo=${doc.archivo})}"
+                               th:attr="download=${doc.archivo}"
+                               th:title="'Descargar ' + ${doc.archivo}">
+                                Descargar
+                            </a>
+
+                            <span th:unless="${doc.disponible}" class="documento-pendiente">
+                                Pendiente
+                            </span>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

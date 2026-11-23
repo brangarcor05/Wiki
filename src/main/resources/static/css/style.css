@@ -459,3 +459,241 @@ footer p {
         padding: 20px;
     }
 }
+
+/* ---------- Documentos de la entrega final ---------- */
+
+.documentos-resumen strong {
+    color: #a0262b;
+}
+
+#lista-documentos {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px #ccc;
+    overflow-x: auto;
+}
+
+#lista-documentos table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#lista-documentos th {
+    background-color: #a0262b;
+    color: white;
+    padding: 15px;
+    text-align: left;
+}
+
+#lista-documentos td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+#lista-documentos tr:hover {
+    background-color: #f8e9ea;
+}
+
+.documento-numero {
+    font-weight: bold;
+    color: #a0262b;
+    width: 60px;
+}
+
+.documento-info strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.documento-info span {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.boton-descargar {
+    display: inline-block;
+    background-color: #a0262b;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.boton-descargar:hover {
+    background-color: #7d1d21;
+    color: white;
+}
+
+.documento-pendiente {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 5px;
+    background-color: #eee;
+    color: #777;
+    white-space: nowrap;
+}
+
+.documento-acciones {
+    white-space: nowrap;
+}
+
+.boton-ver {
+    display: inline-block;
+    background-color: white;
+    color: #a0262b;
+    border: 1px solid #a0262b;
+    padding: 7px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-right: 6px;
+}
+
+.boton-ver:hover {
+    background-color: #f8e9ea;
+}
+
+.documento-info a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.documento-info a:hover strong {
+    color: #a0262b;
+    text-decoration: underline;
+}
+
+/* ---------- Vista HTML de un documento ---------- */
+
+.documento-barra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.volver-enlace {
+    color: #a0262b;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.volver-enlace:hover {
+    text-decoration: underline;
+}
+
+.documento-etiqueta {
+    color: #777;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+}
+
+.documento-contenido {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px #ccc;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+}
+
+.documento-contenido h1,
+.documento-contenido h2,
+.documento-contenido h3,
+.documento-contenido h4 {
+    color: #a0262b;
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+}
+
+.documento-contenido h1 {
+    font-size: 1.6em;
+}
+
+.documento-contenido h2 {
+    font-size: 1.35em;
+}
+
+.documento-contenido h3 {
+    font-size: 1.15em;
+}
+
+.documento-contenido p {
+    margin: 0.6em 0;
+}
+
+.documento-contenido ul,
+.documento-contenido ol {
+    padding-left: 1.6em;
+}
+
+.documento-contenido img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 15px auto;
+    border: 1px solid #eee;
+}
+
+.documento-contenido table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.92em;
+    display: block;
+    overflow-x: auto;
+}
+
+.documento-contenido th,
+.documento-contenido td {
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.documento-contenido tr:first-child td,
+.documento-contenido th {
+    background-color: #f8e9ea;
+    font-weight: bold;
+}
+
+.documento-contenido td p,
+.documento-contenido th p {
+    margin: 0 0 4px;
+}
+
+.documento-contenido td p:last-child,
+.documento-contenido th p:last-child {
+    margin-bottom: 0;
+}
+
+.documento-contenido .documento-portada {
+    font-size: 1.8em;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f8e9ea;
+}
+
+.documento-contenido .documento-subtitulo {
+    color: #777;
+    font-size: 1.1em;
+}
+
+.documento-contenido a {
+    color: #a0262b;
+}
+
+@media (max-width: 700px) {
+    .documento-contenido {
+        padding: 20px;
+    }
+}

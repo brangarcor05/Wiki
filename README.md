@@ -143,7 +143,7 @@ Ubicación:
 src/main/java/com/tallerwiki/thymeleaf/model/
 ```
 
-Este paquete contiene las clases que representan los datos que utiliza la Wiki. Actualmente se manejan cinco modelos: `Category`, `Miembro`, `Section`, `WikiPage` y `MensajeContacto`. Todos son entidades JPA (`@Entity`) que se persisten en la base de datos H2.
+Este paquete contiene las clases que representan los datos que utiliza la Wiki. Actualmente se manejan seis modelos: `Category`, `Miembro`, `Section`, `WikiPage`, `MensajeContacto` y `Documento`. Todos son entidades JPA (`@Entity`) que se persisten en la base de datos H2.
 
 ---
 
@@ -333,7 +333,7 @@ Es utilizado para representar la información del equipo y se entrega a `EquipoC
 
 ## Constructores y getters/setters
 
-Los cinco modelos cuentan con:
+Los seis modelos cuentan con:
 
 - constructor vacío
 - constructor con los atributos principales
@@ -632,6 +632,35 @@ La validación se hace en dos lugares:
 - **En el servidor (Bean Validation):** `MensajeContacto` tiene las mismas reglas con `@NotBlank`, `@Size` y `@Pattern`, y el controlador usa `@Valid`. Si alguien envía el formulario sin JavaScript o con datos alterados, la vista se muestra de nuevo con los errores de cada campo y con lo que ya había escrito, en lugar de fallar al guardar.
 
 El controlador solo acepta los cinco campos del formulario (`setAllowedFields`), así que desde la petición no se pueden fijar el `id` ni la `fecha`, y quita los espacios de los extremos antes de validar.
+
+---
+
+## `DocumentoController.java`
+
+Controla la sección de documentos de la entrega final.
+
+Rutas:
+
+```text
+/documentos            listado de los 8 documentos
+/documentos/{numero}   un documento convertido a HTML (por ejemplo /documentos/8)
+```
+
+Vistas:
+
+```text
+documentos.html
+documento-detalle.html
+```
+
+Envía:
+
+```text
+documentos    lista de los 8 documentos, en orden
+disponibles   cuántos ya tienen su archivo subido
+```
+
+Los datos vienen de `DocumentoService`, que lee la tabla `documentos` y marca cada documento como disponible si su archivo existe en `static/documentos/`. Para la vista de un documento, el servicio convierte el `.docx` a HTML con la librería Mammoth y el controlador lo entrega a la vista en `contenidoHtml`. La ruta usa el patrón `{numero:\\d+}`, que solo acepta números: así, las descargas (`/documentos/01_Resumen_Ejecutivo.docx`) siguen llegando a los archivos estáticos. Ver la sección 20 para subir los archivos.
 
 ---
 
@@ -1016,6 +1045,8 @@ WikiDataService
 | `/categoria/{id}` | `CategoryController` | `categoria-detalle.html` |
 | `/equipo` | `EquipoController` | `equipo.html` |
 | `/contacto` | `ContactController` | `contacto.html` |
+| `/documentos` | `DocumentoController` | `documentos.html` |
+| `/documentos/{numero}` | `DocumentoController` | `documento-detalle.html` |
 
 ---
 
@@ -1208,6 +1239,7 @@ Password: (vacío)
 | `sections` | Secciones de cada página |
 | `miembros` | Integrantes del equipo |
 | `mensajes_contacto` | Mensajes enviados desde el formulario de contacto |
+| `documentos` | Documentos de la entrega final (título, descripción y nombre del archivo) |
 
 ## Nota sobre H2
 
@@ -1247,3 +1279,48 @@ docker rm -f wiki-app        # eliminarlo (para reconstruir con cambios nuevos)
 Para desplegar una versión nueva: `docker rm -f wiki-app`, luego repite los pasos 1 y 2.
 
 Si el puerto 8081 ya está ocupado, cambia solo el primer número, por ejemplo `-p 9090:8081`, y abre `http://localhost:9090/`.
+
+---
+
+# 20. Documentos de la entrega final
+
+La página `/documentos` (opción **Documentos** del menú) lista los 8 documentos que pide el enunciado del proyecto. Cada uno se puede **leer dentro de la Wiki**, como una página HTML con el diseño del sitio, o **descargar** en formato Word.
+
+## Cómo funciona
+
+- **Modelo `Documento`:** número, título, descripción y nombre del archivo. Los 8 registros se cargan desde `data.sql`.
+- **`DocumentoService`:** consulta los documentos en orden y comprueba si cada archivo existe en `src/main/resources/static/documentos/`.
+- **Vista `documentos.html`:** muestra una tabla con los botones **Ver** y **Descargar** para los archivos subidos y la etiqueta **Pendiente** para los que faltan, además del conteo "Disponibles: X de 8".
+- **Vista `documento-detalle.html`:** muestra el contenido del documento dentro de la Wiki, con el encabezado y el menú comunes, y un botón para descargar el original.
+
+## Conversión de Word a HTML
+
+`DocumentoService` usa la librería [Mammoth](https://github.com/mwilliamson/java-mammoth) (`org.zwobble.mammoth:mammoth`) para convertir el `.docx` a HTML:
+
+- Los estilos **Título 1, 2, 3…** de Word se convierten en `h1`, `h2`, `h3`…, y los estilos **Título** y **Subtítulo** de la portada se agregan con `addStyleMap`.
+- Se conservan párrafos, negritas, cursivas, listas, tablas, enlaces e imágenes (las imágenes quedan incrustadas en el HTML).
+- No se copian fuentes, colores ni tamaños del Word: el documento toma el estilo de la Wiki (`.documento-contenido` en `style.css`).
+- Cada archivo se convierte una sola vez y el resultado queda en memoria, porque los archivos van dentro de la imagen y no cambian mientras la aplicación corre.
+- La vista usa `th:utext` para insertar el HTML convertido. Esto es seguro porque los archivos los sube el equipo, no los visitantes.
+
+Para que el documento se vea bien en la Wiki, usa en Word los estilos **Título 1**, **Título 2**, etc. para los encabezados, en lugar de texto grande en negrita.
+
+## Subir o actualizar un documento
+
+1. Copia el archivo en `src/main/resources/static/documentos/` con **exactamente** este nombre (mayúsculas, guiones bajos y extensión incluidos):
+
+| N.º | Documento | Nombre del archivo |
+|---|---|---|
+| 1 | Resumen ejecutivo | `01_Resumen_Ejecutivo.docx` |
+| 2 | Arquitectura C4 | `02_Arquitectura_C4.docx` |
+| 3 | Despliegue | `03_Despliegue.docx` |
+| 4 | Pruebas de carga | `04_Pruebas_Carga.docx` |
+| 5 | Pruebas funcionales | `05_Pruebas_Funcionales.docx` |
+| 6 | Pruebas unitarias y SonarQube | `06_Unitarias_SonarQube.docx` |
+| 7 | Pruebas automatizadas | `07_Pruebas_Automatizadas.docx` |
+| 8 | Roles y seguridad | `08_Roles_y_Seguridad.docx` |
+
+2. Reconstruye y vuelve a ejecutar el contenedor (sección 19). Los archivos quedan dentro de la imagen.
+3. Haz commit de los archivos para que queden en el repositorio.
+
+Si un documento aparece como **Pendiente** después de reconstruir, revisa que el nombre del archivo sea idéntico al de la tabla. Para cambiar el título, la descripción o el nombre de un archivo, edita su fila en `data.sql`.
