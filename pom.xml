@@ -50,6 +50,13 @@
 			<artifactId>spring-boot-h2console</artifactId>
 		</dependency>
 
+		<!-- Conversión de los documentos .docx a HTML para verlos dentro de la Wiki -->
+		<dependency>
+			<groupId>org.zwobble.mammoth</groupId>
+			<artifactId>mammoth</artifactId>
+			<version>1.12.0</version>
+		</dependency>
+
 		<!-- Recarga automática en desarrollo -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

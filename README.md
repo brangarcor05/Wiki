@@ -143,7 +143,7 @@ Ubicación:
 src/main/java/com/tallerwiki/thymeleaf/model/
 ```
 
-Este paquete contiene las clases que representan los datos que utiliza la Wiki. Actualmente se manejan cinco modelos: `Category`, `Miembro`, `Section`, `WikiPage` y `MensajeContacto`. Todos son entidades JPA (`@Entity`) que se persisten en la base de datos H2.
+Este paquete contiene las clases que representan los datos que utiliza la Wiki. Actualmente se manejan seis modelos: `Category`, `Miembro`, `Section`, `WikiPage`, `MensajeContacto` y `Documento`. Todos son entidades JPA (`@Entity`) que se persisten en la base de datos H2.
 
 ---
 
@@ -333,7 +333,7 @@ Es utilizado para representar la información del equipo y se entrega a `EquipoC
 
 ## Constructores y getters/setters
 
-Los cuatro modelos cuentan con:
+Los seis modelos cuentan con:
 
 - constructor vacío
 - constructor con los atributos principales
@@ -624,9 +624,43 @@ Vista:
 contacto.html
 ```
 
-El `GET /contacto` presenta la vista. El `POST /contacto` recibe los datos del formulario, los guarda en la base de datos mediante `ContactoService` y redirige de regreso a `/contacto` mostrando el aviso "Tu mensaje fue guardado correctamente".
+El `GET /contacto` presenta la vista. El `POST /contacto` recibe los datos del formulario, los valida, los guarda en la base de datos mediante `ContactoService` y redirige de regreso a `/contacto` mostrando el aviso "Tu mensaje fue guardado correctamente".
 
-La validación del formulario se realiza en JavaScript; al pasar la validación, el formulario se envía al servidor para su guardado.
+La validación se hace en dos lugares:
+
+- **En el navegador (JavaScript):** da retroalimentación inmediata e impide el envío si hay errores.
+- **En el servidor (Bean Validation):** `MensajeContacto` tiene las mismas reglas con `@NotBlank`, `@Size` y `@Pattern`, y el controlador usa `@Valid`. Si alguien envía el formulario sin JavaScript o con datos alterados, la vista se muestra de nuevo con los errores de cada campo y con lo que ya había escrito, en lugar de fallar al guardar.
+
+El controlador solo acepta los cinco campos del formulario (`setAllowedFields`), así que desde la petición no se pueden fijar el `id` ni la `fecha`, y quita los espacios de los extremos antes de validar.
+
+---
+
+## `DocumentoController.java`
+
+Controla la sección de documentos de la entrega final.
+
+Rutas:
+
+```text
+/documentos            listado de los 8 documentos
+/documentos/{numero}   un documento convertido a HTML (por ejemplo /documentos/8)
+```
+
+Vistas:
+
+```text
+documentos.html
+documento-detalle.html
+```
+
+Envía:
+
+```text
+documentos    lista de los 8 documentos, en orden
+disponibles   cuántos ya tienen su archivo subido
+```
+
+Los datos vienen de `DocumentoService`, que lee la tabla `documentos` y marca cada documento como disponible si su archivo existe en `static/documentos/`. Para la vista de un documento, el servicio convierte el `.docx` a HTML con la librería Mammoth y el controlador lo entrega a la vista en `contenidoHtml`. La ruta usa el patrón `{numero:\\d+}`, que solo acepta números: así, las descargas (`/documentos/01_Resumen_Ejecutivo.docx`) siguen llegando a los archivos estáticos. Ver la sección 20 para subir los archivos.
 
 ---
 
@@ -669,7 +703,7 @@ Ejemplo:
 
 ```html
 <div th:each="pagina : ${paginas}">
-    <h2 th:text="${pagina.titulo}"></h2>
+    <h2 th:text="${pagina.title}"></h2>
 </div>
 ```
 
@@ -866,7 +900,7 @@ static/js/contacto.js
 
 Se utiliza principalmente para las validaciones del formulario de contacto.
 
-Al pasar todas las validaciones, el formulario se envía al servidor (`form.submit()`) para que `ContactController` lo guarde en la base de datos.
+Al pasar todas las validaciones, el formulario se envía al servidor (`form.submit()`) para que `ContactController` lo valide de nuevo y lo guarde en la base de datos.
 
 Las validaciones requeridas son:
 
@@ -1011,6 +1045,8 @@ WikiDataService
 | `/categoria/{id}` | `CategoryController` | `categoria-detalle.html` |
 | `/equipo` | `EquipoController` | `equipo.html` |
 | `/contacto` | `ContactController` | `contacto.html` |
+| `/documentos` | `DocumentoController` | `documentos.html` |
+| `/documentos/{numero}` | `DocumentoController` | `documento-detalle.html` |
 
 ---
 
@@ -1132,7 +1168,7 @@ th:fragment
 Ejemplo:
 
 ```html
-<h1 th:text="${pagina.titulo}">
+<h1 th:text="${pagina.title}">
     Título de la página
 </h1>
 ```
@@ -1141,7 +1177,7 @@ Para recorrer:
 
 ```html
 <div th:each="pagina : ${paginas}">
-    <h2 th:text="${pagina.titulo}"></h2>
+    <h2 th:text="${pagina.title}"></h2>
 </div>
 ```
 
@@ -1167,18 +1203,26 @@ En `application.properties`:
 spring.datasource.url=jdbc:h2:mem:wikidb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 spring.jpa.hibernate.ddl-auto=create
 spring.jpa.defer-datasource-initialization=true
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
-spring.h2.console.settings.web-allow-others=true
+spring.h2.console.enabled=false
 ```
 
 - `ddl-auto=create`: Hibernate crea las tablas a partir de las entidades.
 - `data.sql`: carga los datos iniciales al arrancar.
-- `web-allow-others=true`: necesario para acceder a la consola cuando la app corre en Docker.
+- `h2.console.enabled=false`: la consola web de H2 está **apagada por defecto**, también en la imagen Docker. Con el usuario `sa` sin contraseña, una consola expuesta permitiría entrar a la base de datos e incluso ejecutar código en el servidor.
 
-## Consola web de H2
+## Consola web de H2 (solo en desarrollo)
 
-Con la aplicación corriendo, abrir `http://localhost:8081/h2-console` y conectar con:
+La consola se habilita con el perfil `dev` (`application-dev.properties`), que solo acepta conexiones desde la misma máquina. Para usarla, arranca la aplicación con ese perfil:
+
+```text
+# Windows (PowerShell)
+$env:SPRING_PROFILES_ACTIVE="dev"; .\mvnw.cmd spring-boot:run
+
+# Linux / macOS
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
+```
+
+Luego abre `http://localhost:8081/h2-console` y conecta con:
 
 ```text
 JDBC URL: jdbc:h2:mem:wikidb
@@ -1195,6 +1239,7 @@ Password: (vacío)
 | `sections` | Secciones de cada página |
 | `miembros` | Integrantes del equipo |
 | `mensajes_contacto` | Mensajes enviados desde el formulario de contacto |
+| `documentos` | Documentos de la entrega final (título, descripción y nombre del archivo) |
 
 ## Nota sobre H2
 
@@ -1202,18 +1247,80 @@ Como la base es en memoria, los datos se pierden al detener la aplicación y se 
 
 ---
 
-# 19. Despliegue docker
+# 19. Despliegue con Docker
 
-Construir la imagen:
+Requisito: tener Docker instalado y en ejecución. No hace falta instalar Java ni Maven: la imagen compila el proyecto en su primera fase y solo ejecuta el `.jar` en la segunda, sobre una imagen liviana con Java 21 (JRE).
+
+Desde la carpeta del proyecto (donde está el `Dockerfile`):
+
+**1. Construir la imagen**
 
 ```text
-docker build -t "nombre_del_proyecto" .
+docker build -t wiki-taller .
 ```
 
-Ejecutar el contenedor:
+**2. Ejecutar el contenedor**
 
 ```text
 docker run -d -p 8081:8081 --name wiki-app wiki-taller
 ```
 
 La aplicación queda disponible en `http://localhost:8081/`.
+
+**Comandos útiles**
+
+```text
+docker logs -f wiki-app      # ver el log de la aplicación
+docker stop wiki-app         # detener el contenedor
+docker start wiki-app        # volver a iniciarlo
+docker rm -f wiki-app        # eliminarlo (para reconstruir con cambios nuevos)
+```
+
+Para desplegar una versión nueva: `docker rm -f wiki-app`, luego repite los pasos 1 y 2.
+
+Si el puerto 8081 ya está ocupado, cambia solo el primer número, por ejemplo `-p 9090:8081`, y abre `http://localhost:9090/`.
+
+---
+
+# 20. Documentos de la entrega final
+
+La página `/documentos` (opción **Documentos** del menú) lista los 8 documentos que pide el enunciado del proyecto. Cada uno se puede **leer dentro de la Wiki**, como una página HTML con el diseño del sitio, o **descargar** en formato Word.
+
+## Cómo funciona
+
+- **Modelo `Documento`:** número, título, descripción y nombre del archivo. Los 8 registros se cargan desde `data.sql`.
+- **`DocumentoService`:** consulta los documentos en orden y comprueba si cada archivo existe en `src/main/resources/static/documentos/`.
+- **Vista `documentos.html`:** muestra una tabla con los botones **Ver** y **Descargar** para los archivos subidos y la etiqueta **Pendiente** para los que faltan, además del conteo "Disponibles: X de 8".
+- **Vista `documento-detalle.html`:** muestra el contenido del documento dentro de la Wiki, con el encabezado y el menú comunes, y un botón para descargar el original.
+
+## Conversión de Word a HTML
+
+`DocumentoService` usa la librería [Mammoth](https://github.com/mwilliamson/java-mammoth) (`org.zwobble.mammoth:mammoth`) para convertir el `.docx` a HTML:
+
+- Los estilos **Título 1, 2, 3…** de Word se convierten en `h1`, `h2`, `h3`…, y los estilos **Título** y **Subtítulo** de la portada se agregan con `addStyleMap`.
+- Se conservan párrafos, negritas, cursivas, listas, tablas, enlaces e imágenes (las imágenes quedan incrustadas en el HTML).
+- No se copian fuentes, colores ni tamaños del Word: el documento toma el estilo de la Wiki (`.documento-contenido` en `style.css`).
+- Cada archivo se convierte una sola vez y el resultado queda en memoria, porque los archivos van dentro de la imagen y no cambian mientras la aplicación corre.
+- La vista usa `th:utext` para insertar el HTML convertido. Esto es seguro porque los archivos los sube el equipo, no los visitantes.
+
+Para que el documento se vea bien en la Wiki, usa en Word los estilos **Título 1**, **Título 2**, etc. para los encabezados, en lugar de texto grande en negrita.
+
+## Subir o actualizar un documento
+
+1. Copia el archivo en `src/main/resources/static/documentos/` con **exactamente** este nombre (mayúsculas, guiones bajos y extensión incluidos):
+
+| N.º | Documento | Nombre del archivo |
+|---|---|---|
+| 1 | Resumen ejecutivo | `01_Resumen_Ejecutivo.docx` |
+| 2 | Arquitectura C4 | `02_Arquitectura_C4.docx` |
+| 3 | Despliegue | `03_Despliegue.docx` |
+| 4 | Pruebas de carga | `04_Pruebas_Carga.docx` |
+| 5 | Pruebas funcionales | `05_Pruebas_Funcionales.docx` |
+| 6 | Pruebas unitarias y SonarQube | `06_Unitarias_SonarQube.docx` |
+| 7 | Pruebas automatizadas | `07_Pruebas_Automatizadas.docx` |
+| 8 | Roles y seguridad | `08_Roles_y_Seguridad.docx` |
+
+2. Reconstruye y vuelve a ejecutar el contenedor (sección 19). Los archivos quedan dentro de la imagen.
+3. Haz commit de los archivos para que queden en el repositorio.
+
+Si un documento aparece como **Pendiente** después de reconstruir, revisa que el nombre del archivo sea idéntico al de la tabla. Para cambiar el título, la descripción o el nombre de un archivo, edita su fila en `data.sql`.
