@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${documento.titulo} + ' - Wiki Sistema de Gestión de Procesos'">
+        Documento - Wiki Sistema de Gestión de Procesos
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div th:replace="~{fragments/menu :: menu('documentos')}"></div>
+
+    <main id="documento-detalle">
+
+        <div class="documento-barra">
+
+            <a class="volver-enlace" th:href="@{/documentos}">← Volver a los documentos</a>
+
+            <a class="boton-descargar"
+               th:href="@{/documentos/{archivo}(archivo=${documento.archivo})}"
+               th:attr="download=${documento.archivo}">
+                Descargar .docx
+            </a>
+
+        </div>
+
+        <p class="documento-etiqueta">
+            Documento
+            <span th:text="${#numbers.formatInteger(documento.numero, 2)}">01</span>
+            de la entrega final
+        </p>
+
+        <h2 th:text="${documento.titulo}">Título del documento</h2>
+
+        <!-- Contenido convertido desde el .docx en DocumentoService (Mammoth).
+             th:utext inserta el HTML sin escaparlo; los archivos los sube el equipo. -->
+        <article class="documento-contenido" th:utext="${contenidoHtml}">
+            Contenido del documento.
+        </article>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

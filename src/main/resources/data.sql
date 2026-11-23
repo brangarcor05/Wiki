@@ -181,3 +181,14 @@ INSERT INTO miembros (nombre, rol, correo, imagen) VALUES
 ('Carol Robayo', 'Desarrolladora', '', 'carol.jpg'),
 ('Juliana Aguirre', 'Desarrolladora', '', 'juliana.jpg'),
 ('Juan Santamaria', 'Desarrollador', '', 'juan.jpg');
+
+-- Documentos de la entrega final (los archivos van en static/documentos/)
+INSERT INTO documentos (numero, titulo, descripcion, archivo) VALUES
+(1, 'Resumen ejecutivo', 'Visión general del sistema: problema, objetivos, alcance y resultados del proyecto.', '01_Resumen_Ejecutivo.docx'),
+(2, 'Arquitectura C4', 'Diagramas de contexto, contenedores y componentes del sistema según el modelo C4.', '02_Arquitectura_C4.docx'),
+(3, 'Despliegue', 'Contenedores Docker, Kubernetes, configuración del entorno y pipeline de CI/CD.', '03_Despliegue.docx'),
+(4, 'Pruebas de carga', 'Escenarios, configuración y resultados de las pruebas de rendimiento.', '04_Pruebas_Carga.docx'),
+(5, 'Pruebas funcionales', 'Casos de prueba de las historias de usuario y sus resultados.', '05_Pruebas_Funcionales.docx'),
+(6, 'Pruebas unitarias y SonarQube', 'Pruebas unitarias, cobertura y análisis estático de calidad con SonarQube.', '06_Unitarias_SonarQube.docx'),
+(7, 'Pruebas automatizadas', 'Pruebas de integración y de extremo a extremo ejecutadas de forma automática.', '07_Pruebas_Automatizadas.docx'),
+(8, 'Roles y seguridad', 'Autenticación con JWT, roles y permisos, aislamiento entre empresas y pruebas de seguridad.', '08_Roles_y_Seguridad.docx');
